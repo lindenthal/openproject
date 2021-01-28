@@ -16,6 +16,7 @@ ToDo: check all links.
 
 ## Installation
 
+test
 Get started with installing and upgrading OpenProject using [our Installation Guide starting point](https://docs.openproject.org/installation-and-operations/).
 
 The guides for [manual](./installation/manual/README.md), [packaged](./installation/packaged/) and [Docker-based](./installation/docker/README.md) installations are provided.
