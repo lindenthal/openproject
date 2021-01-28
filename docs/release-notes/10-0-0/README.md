@@ -8,6 +8,7 @@ release_date: 2019-09-23
 
 # OpenProject 10.0
 
+test123 
 OpenProject 10 introduces drag and drop ordering of work packages in the work package table and Gantt view. The project overview dashboard has been completely rewritten to provide a modern and flexible overview of the project. In addition, work package description and custom fields now have task lists you can create and manage within the CKEditor5 WYSIWYG editor. A new card view on the work package page provides quick overview of the tasks. Users of the Cloud and Enterprise Edition benefit from graphs which can be included in the project overview page.
 
 Read below to get a detailed overview of what is new in OpenProject 10.
