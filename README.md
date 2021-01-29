@@ -3,7 +3,7 @@
 [![Code Climate](https://codeclimate.com/github/opf/openproject/badges/gpa.svg)](https://codeclimate.com/github/opf/openproject)
 
 OpenProject is a web-based project management software. Its key features are:
-* test2
+* test23
 * [Project planning and scheduling](https://www.openproject.org/collaboration-software-features/#project-planning)
 * [Product roadmap and release planning](https://www.openproject.org/collaboration-software-features/#product-management)
 * [Task management and team collaboration](https://www.openproject.org/collaboration-software-features/#task-management)
