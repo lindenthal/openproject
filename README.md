@@ -52,6 +52,7 @@ See [docs/COPYRIGHT.rdoc](docs/COPYRIGHT.rdoc) for details.
 ## Credits
 
 ### Icons
+asdf
 
 Thanks to Vincent Le Moign and his fabulous Minicons icons on [webalys.com](http://www.webalys.com/minicons/icons-free-pack.php).
 
