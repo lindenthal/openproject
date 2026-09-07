@@ -443,8 +443,8 @@ export class GlobalSearchInputComponent implements AfterViewInit, OnDestroy {
     this.refreshFilteredResults();
   }
 
-  public selectProjectScope(event:Event):void {
-    this.selectedProjectScope = (event.target as HTMLSelectElement).value as ProjectScope;
+  public selectProjectScope(projectScope:ProjectScope):void {
+    this.selectedProjectScope = projectScope;
   }
 
   public onProjectScopeMouseDown(event:MouseEvent):void {

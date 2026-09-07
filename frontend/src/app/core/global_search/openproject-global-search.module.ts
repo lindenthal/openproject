@@ -37,7 +37,6 @@ import {
 import { OpSharedModule } from 'core-app/shared/shared.module';
 import { RecentItemsService } from 'core-app/core/recent-items.service';
 import { DynamicIconDirective } from 'core-app/shared/components/primer/dynamic-icon.directive';
-import { GlobalSearchQuickFilterComponent } from 'core-app/core/global_search/input/global-search-quick-filter.component';
 
 @NgModule({
   imports: [
@@ -45,7 +44,6 @@ import { GlobalSearchQuickFilterComponent } from 'core-app/core/global_search/in
     OpenprojectWorkPackagesModule,
     OpenprojectAutocompleterModule,
     DynamicIconDirective,
-    GlobalSearchQuickFilterComponent,
   ],
   providers: [
     GlobalSearchService,

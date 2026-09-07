@@ -59,80 +59,148 @@
     [getOptionsFn]="autocompleterOptions.getOptionsFn"
     >
     <ng-template op-autocompleter-header-tmp>
+      <div class="global-search--toolbar">
+        <div class="global-search--tabs" role="tablist">
+          @for (resultType of resultTypes; track resultType) {
+            <button
+              type="button"
+              class="global-search--tab"
+              role="tab"
+              [class.-selected]="activeResultType === resultType"
+              [attr.aria-selected]="activeResultType === resultType"
+              (mousedown)="$event.preventDefault()"
+              (click)="$event.stopPropagation(); selectResultType(resultType)"
+            >{{ text[resultType] }}</button>
+          }
+        </div>
+      </div>
+
       @if (!searchTerm && (hasRecentItems$ | async)) {
-        <div>{{text.recently_viewed}}</div>
+        <div class="global-search--results-heading">{{ text.recently_viewed }}</div>
       }
-      @if (searchTerm) {
-        <div class="global-search--toolbar">
-          <div class="global-search--tabs" role="tablist">
-            @for (resultType of resultTypes; track resultType) {
+
+      <aside
+        class="global-search--filters"
+        [attr.aria-label]="text.search"
+        (mousedown)="$event.preventDefault(); $event.stopPropagation()"
+        (click)="$event.stopPropagation()"
+      >
+        <fieldset class="global-search--filter-group">
+          <legend class="global-search--filter-heading">{{ text.last_updated }}</legend>
+          <div class="global-search--filter-pills">
+            @for (filter of lastUpdatedFilters; track filter) {
               <button
                 type="button"
-                class="global-search--tab"
-                role="tab"
-                [class.-selected]="activeResultType === resultType"
-                [attr.aria-selected]="activeResultType === resultType"
-                (mousedown)="$event.preventDefault()"
-                (click)="$event.stopPropagation(); selectResultType(resultType)"
-              >{{ text[resultType] }}</button>
+                class="Button Button--small global-search--filter-pill"
+                [class.-selected]="selectedLastUpdatedFilter === filter"
+                [attr.aria-pressed]="selectedLastUpdatedFilter === filter"
+                (click)="selectLastUpdatedFilter(filter)"
+              >
+                <span class="Button-content"><span class="Button-label">{{ text[filter] }}</span></span>
+              </button>
             }
           </div>
-          <select
-            class="global-search--project-scope-select"
-            [attr.aria-label]="text.project"
-            [value]="selectedProjectScope"
-            (mousedown)="onProjectScopeMouseDown($event)"
-            (click)="$event.stopPropagation()"
-            (blur)="onProjectScopeBlur()"
-            (change)="selectProjectScope($event)"
-          >
+        </fieldset>
+
+        <fieldset class="global-search--filter-group">
+          <legend class="global-search--filter-heading">{{ text.project }}</legend>
+          <div class="global-search--filter-options">
             @for (projectScope of projectScopes; track projectScope) {
-              <option [value]="projectScope">{{ text[projectScope] }}</option>
+              <label class="global-search--filter-option">
+                <input
+                  type="radio"
+                  class="FormControl-radio"
+                  name="global-search-project-scope"
+                  [value]="projectScope"
+                  [checked]="selectedProjectScope === projectScope"
+                  (click)="selectProjectScope(projectScope)"
+                />
+                <span>{{ text[projectScope] }}</span>
+              </label>
             }
-          </select>
-        </div>
-      <div class="global-search--quick-filters">
-          <op-global-search-quick-filter
-            [label]="text.last_updated"
-            [options]="lastUpdatedFilters"
-            [labels]="text"
-            [selectedValue]="selectedLastUpdatedFilter"
-            (valueChange)="selectLastUpdatedFilter($event)"
-          />
-          @if (activeResultType === 'work_packages') {
-            <op-global-search-quick-filter
-              [label]="text.status"
-              [options]="workPackageStatusFilters"
-              [labels]="text"
-              [selectedValue]="selectedWorkPackageStatusFilter"
-              (valueChange)="selectWorkPackageStatusFilter($event)"
-            />
-            <op-global-search-quick-filter
-              [label]="text.involvement"
-              [options]="workPackageInvolvementFilters"
-              [labels]="text"
-              [selectedValue]="selectedWorkPackageInvolvementFilter"
-              (valueChange)="selectWorkPackageInvolvementFilter($event)"
-            />
-          }
-          @if (activeResultType === 'meetings') {
-            <op-global-search-quick-filter
-              [label]="text.meeting_date"
-              [options]="meetingTimeFilters"
-              [labels]="text"
-              [selectedValue]="selectedMeetingTimeFilter"
-              (valueChange)="selectMeetingTimeFilter($event)"
-            />
-            <op-global-search-quick-filter
-              [label]="text.involvement"
-              [options]="meetingInvolvementFilters"
-              [labels]="text"
-              [selectedValue]="selectedMeetingInvolvementFilter"
-              (valueChange)="selectMeetingInvolvementFilter($event)"
-            />
-          }
-        </div>
-      }
+          </div>
+        </fieldset>
+
+        @if (activeResultType === 'work_packages') {
+          <fieldset class="global-search--filter-group">
+            <legend class="global-search--filter-heading">{{ text.status }}</legend>
+            <div class="global-search--filter-options">
+              @for (filter of workPackageStatusFilters; track filter) {
+                <label class="global-search--filter-option">
+                  <input
+                    type="radio"
+                    class="FormControl-radio"
+                    name="global-search-work-package-status"
+                    [value]="filter"
+                    [checked]="selectedWorkPackageStatusFilter === filter"
+                    (click)="selectWorkPackageStatusFilter(filter)"
+                  />
+                  <span>{{ text[filter] }}</span>
+                </label>
+              }
+            </div>
+          </fieldset>
+
+          <fieldset class="global-search--filter-group">
+            <legend class="global-search--filter-heading">{{ text.involvement }}</legend>
+            <div class="global-search--filter-options">
+              @for (filter of workPackageInvolvementFilters; track filter) {
+                <label class="global-search--filter-option">
+                  <input
+                    type="radio"
+                    class="FormControl-radio"
+                    name="global-search-work-package-involvement"
+                    [value]="filter"
+                    [checked]="selectedWorkPackageInvolvementFilter === filter"
+                    (click)="selectWorkPackageInvolvementFilter(filter)"
+                  />
+                  <span>{{ text[filter] }}</span>
+                </label>
+              }
+            </div>
+          </fieldset>
+        }
+
+        @if (activeResultType === 'meetings') {
+          <fieldset class="global-search--filter-group">
+            <legend class="global-search--filter-heading">{{ text.meeting_date }}</legend>
+            <div class="global-search--filter-options">
+              @for (filter of meetingTimeFilters; track filter) {
+                <label class="global-search--filter-option">
+                  <input
+                    type="radio"
+                    class="FormControl-radio"
+                    name="global-search-meeting-date"
+                    [value]="filter"
+                    [checked]="selectedMeetingTimeFilter === filter"
+                    (click)="selectMeetingTimeFilter(filter)"
+                  />
+                  <span>{{ text[filter] }}</span>
+                </label>
+              }
+            </div>
+          </fieldset>
+
+          <fieldset class="global-search--filter-group">
+            <legend class="global-search--filter-heading">{{ text.involvement }}</legend>
+            <div class="global-search--filter-options">
+              @for (filter of meetingInvolvementFilters; track filter) {
+                <label class="global-search--filter-option">
+                  <input
+                    type="radio"
+                    class="FormControl-radio"
+                    name="global-search-meeting-involvement"
+                    [value]="filter"
+                    [checked]="selectedMeetingInvolvementFilter === filter"
+                    (click)="selectMeetingInvolvementFilter(filter)"
+                  />
+                  <span>{{ text[filter] }}</span>
+                </label>
+              }
+            </div>
+          </fieldset>
+        }
+      </aside>
     </ng-template>
     <ng-template op-autocompleter-option-tmp let-item let-index="index" let-search="searchTerm">
       <a
