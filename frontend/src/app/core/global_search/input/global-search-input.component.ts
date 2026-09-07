@@ -149,6 +149,7 @@ export class GlobalSearchInputComponent implements AfterViewInit, OnDestroy {
   private currentSearchResults:GlobalSearchResult[] = [];
   private currentResultQuery = '';
   private projectScopeInteraction = false;
+  private filterRefreshVersion = 0;
 
   // Computed placeholder that changes based on expanded state
   public get effectivePlaceholder():string {
@@ -324,6 +325,7 @@ export class GlobalSearchInputComponent implements AfterViewInit, OnDestroy {
   }
 
   public search(_$event:unknown):void {
+    this.filterRefreshVersion += 1;
     this.currentValue = this.searchTerm;
   }
 
@@ -588,7 +590,8 @@ export class GlobalSearchInputComponent implements AfterViewInit, OnDestroy {
 
         // Ensure we only load the five recent items
         // in case none of them are available in the cache
-        const filters = new ApiV3FilterBuilder().add('id', '=', wpIds);
+        const filters = this.workPackageFilters().add('id', '=', wpIds);
+        this.applyLastUpdatedFilter(filters);
         const params = {
           offset: '1',
           pageSize: '5',
@@ -604,7 +607,11 @@ export class GlobalSearchInputComponent implements AfterViewInit, OnDestroy {
             map((collection) => {
               // In case none of the wpIds exist anymore or are not accessible
               // this API call would return five arbitrary work packages, as that's the way valid_subset works
-              return collection.elements.filter((wp) => wpIds.includes(wp.id!));
+              const recentWorkPackages = collection.elements.filter((wp) => wpIds.includes(wp.id!));
+              this.currentSearchResults = recentWorkPackages;
+              this.currentResultQuery = '';
+
+              return this.searchResultsToOptions(recentWorkPackages, '');
             })
           );
       }),
@@ -631,17 +638,27 @@ export class GlobalSearchInputComponent implements AfterViewInit, OnDestroy {
   }
 
   private refreshFilteredResults():void {
-    if (!this.currentValue.length) {
-      this.ngSelectComponent.updateItems(this.searchResultsToOptions(
-        this.currentSearchResults,
-        this.currentResultQuery,
-      ));
-      return;
-    }
+    const refreshVersion = this.filterRefreshVersion + 1;
+    this.filterRefreshVersion = refreshVersion;
+    this.ngSelectComponent.loading$.next(true);
+    this.ngSelectComponent.updateItems([]);
 
-    this.autocompleteGlobalSearch().pipe(first()).subscribe((items) => {
-      this.ngSelectComponent.updateItems(items);
-      this.cdRef.detectChanges();
+    this.autocompleteGlobalSearch().pipe(first()).subscribe({
+      next: (items) => {
+        if (refreshVersion !== this.filterRefreshVersion) {
+          return;
+        }
+
+        this.ngSelectComponent.updateItems(items);
+        this.ngSelectComponent.loading$.next(false);
+        this.cdRef.detectChanges();
+      },
+      error: () => {
+        if (refreshVersion === this.filterRefreshVersion) {
+          this.ngSelectComponent.loading$.next(false);
+          this.cdRef.detectChanges();
+        }
+      },
     });
   }
 
